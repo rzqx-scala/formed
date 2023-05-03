@@ -1,9 +1,10 @@
 package io.github.rzqx.formed.instances
 
+import io.github.rzqx.formed.FormEncoder
+
 import cats._
 import cats.data.Chain
 import cats.implicits._
-import io.github.rzqx.formed.FormEncoder
 
 import java.util.UUID
 
