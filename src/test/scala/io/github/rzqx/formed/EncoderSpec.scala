@@ -1,12 +1,12 @@
 package io.github.rzqx.formed
 
+import io.github.rzqx.formed.implicits._
+import io.github.rzqx.formed.syntax._
+
 import cats.data.Chain
 import cats.effect.IO
 
 import weaver.SimpleIOSuite
-
-import implicits._
-import syntax._
 
 object EncoderSpec extends SimpleIOSuite {
   test("Should encode basic") {

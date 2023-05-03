@@ -3,6 +3,7 @@ val CatsEffectVersion = "3.4.9"
 val CatsEffectTestKitVersion = "3.4.7"
 val WeaverCatsVersion = "0.8.3"
 val ShapelessVersion = "2.3.10"
+val Http4sVersion = "0.23.18"
 
 val Scala212 = "2.12.17"
 val Scala213 = "2.13.10"
@@ -29,7 +30,7 @@ ThisBuild / sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 
 usePgpKeyHex("821A82C15670B776F9950C8046E96DBCFD1E8107")
 
-lazy val root = (project in file("."))
+lazy val core = (project in file("."))
   .settings(
     name := "formed",
     libraryDependencies ++= Seq(
@@ -43,4 +44,15 @@ lazy val root = (project in file("."))
     testFrameworks ++= List(
       new TestFramework("weaver.framework.CatsEffect")
     )
+  )
+
+lazy val docs = project.in(file("formed-docs"))
+  .dependsOn(core)
+  .enablePlugins(MdocPlugin)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.http4s" %% "http4s-core" % Http4sVersion,
+    ),
+    mdocIn := (ThisBuild / baseDirectory).value / "docs" / "src",
+    mdocOut := (ThisBuild / baseDirectory).value / "docs" / "out"
   )

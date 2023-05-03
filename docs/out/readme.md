@@ -1,0 +1,94 @@
+
+# Formed
+
+Helper library to squash generic nested products into a list of fields
+for www-form-urlencoded requests, typically to interface with APIs
+that don't support JSON.
+
+Currently supports Scala 2.12 and 2.13.
+
+# Quick Usage
+
+Imports:
+```scala
+import io.github.rzqx.formed.implicits._
+import io.github.rzqx.formed.syntax._
+```
+
+Define your ADT (using Stripe's API as an example) and create an instance:
+```scala
+final case class LineItem(price: String, quantity: Int)
+final case class CheckoutSession(mode: String, line_items: List[LineItem])
+
+val item1 = LineItem("price1", 1)
+val item2 = LineItem("price2", 2)
+val checkout = CheckoutSession("payment", List(item1, item2))
+```
+
+Squash the instance to a form:
+```scala
+checkout.asFormData
+// res0: cats.data.Chain[(String, String)] = Wrap(
+//   seq = Vector(
+//     ("mode", "payment"),
+//     ("line_items[0][price]", "price1"),
+//     ("line_items[0][quantity]", "1"),
+//     ("line_items[1][price]", "price2"),
+//     ("line_items[1][quantity]", "2")
+//   )
+// )
+
+checkout.asFormUrlEncoded
+// res1: String = "mode%3Dpayment%26line_items%5B0%5D%5Bprice%5D%3Dprice1%26line_items%5B0%5D%5Bquantity%5D%3D1%26line_items%5B1%5D%5Bprice%5D%3Dprice2%26line_items%5B1%5D%5Bquantity%5D%3D2"
+```
+
+Use in http4s:
+```scala
+import org.http4s.UrlForm
+
+UrlForm.fromChain(checkout.asFormData)
+// res2: UrlForm = HashMap(line_items[0][quantity] -> Chain(1), line_items[1][price] -> Chain(price2), line_items[0][price] -> Chain(price1), mode -> Chain(payment), line_items[1][quantity] -> Chain(2))
+```
+
+## Typeclasses
+
+Define an encoder for a new type by converting it into a string:
+```scala
+import io.github.rzqx.formed.FormEncoder
+import cats.implicits._
+import scala.concurrent.duration._
+
+implicit val durationEncoder: FormEncoder[Duration] =
+  FormEncoder[String].contramap(_.toSeconds.toString)
+// durationEncoder: FormEncoder[Duration] = io.github.rzqx.formed.FormEncoder$$anon$1$$anonfun$contramap$2@608e0845
+  
+final case class Foo(duration: Duration)
+
+Foo(1.hour).asFormDisplay 
+// res3: String = "duration=3600"
+```
+
+Define a prefix encoder to change the way nested fields are encoded:
+```scala
+import io.github.rzqx.formed.PrefixEncoder
+import io.github.rzqx.formed.instances.EncoderInstances._
+import io.github.rzqx.formed.syntax._
+import cats.data.Chain
+import cats.implicits._
+
+implicit val arrowPrefixEncoder: PrefixEncoder = (value: Chain[String]) =>
+    value.deleteFirst(_ => true) match {
+      case Some((head, tail)) => head + tail.foldMap(v => s" --> $v")
+      case None => ""
+    }
+// arrowPrefixEncoder: PrefixEncoder = repl.MdocSession$MdocApp4$$anonfun$14@5f3f0b8c
+
+
+final case class LineItem(price: String, quantity: Int)
+final case class CheckoutSession(mode: String, line_items: List[LineItem])
+
+CheckoutSession("payment", List(LineItem("price1", 1))).asFormDisplay
+// res5: String = """mode=payment
+// line_items --> 0 --> price=price1
+// line_items --> 0 --> quantity=1"""
+```
