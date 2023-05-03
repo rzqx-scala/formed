@@ -6,13 +6,12 @@ val ShapelessVersion = "2.3.10"
 
 val Scala212 = "2.12.17"
 val Scala213 = "2.13.10"
-val Scala3 = "3.2.2"
 
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213)
 ThisBuild / scalaVersion := Scala213
 
-ThisBuild / organization := "io.zenro"
-ThisBuild / organizationName := "zenro"
+ThisBuild / organization := "io.github.rzqx"
+ThisBuild / organizationName := "rzqx-scala"
 
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
@@ -20,7 +19,7 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 ThisBuild / scalacOptions ++= List("-Ywarn-unused")
 
 ThisBuild / licenses := Seq("APL2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
-ThisBuild / homepage := Some(url("https://github.com/zenro-io/formed"))
+ThisBuild / homepage := Some(url("https://github.com/rzqx-scala/formed"))
 ThisBuild / developers := List(
   Developer("rzqx", "Melvin Low", "me@melvinlow.com", url("https://melvinlow.com"))
 )

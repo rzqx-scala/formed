@@ -1,10 +1,9 @@
-package io.zenro.formed.instances
-
-import io.zenro.formed.FormEncoder
+package io.github.rzqx.formed.instances
 
 import cats._
 import cats.data.Chain
 import cats.implicits._
+import io.github.rzqx.formed.FormEncoder
 
 import java.util.UUID
 

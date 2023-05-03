@@ -1,4 +1,4 @@
-package io.zenro.formed
+package io.github.rzqx.formed
 
 import cats.data.Chain
 import cats.effect.IO
