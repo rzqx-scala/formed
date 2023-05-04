@@ -26,6 +26,8 @@ trait EncoderInstances {
   implicit val encodeChar: FormEncoder[Char] = encodeString.contramap(_.toString)
   implicit val encodeSymbol: FormEncoder[Symbol] = encodeString.contramap(_.toString)
   implicit val encodeUUID: FormEncoder[UUID] = encodeString.contramap(_.toString)
+  implicit def encodeValue[T](implicit ev: ValueOf[T]): FormEncoder[T] =
+    (_: T) => Chain(Chain.empty -> ev.value.toString)
 
   implicit def encodeTraverse[F[_]: Traverse, T](implicit ev: FormEncoder[T]): FormEncoder[F[T]] = (value: F[T]) => {
     Traverse[F].zipWithIndex(value).foldMap { case (v, i) =>

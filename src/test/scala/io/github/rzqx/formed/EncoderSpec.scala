@@ -54,4 +54,15 @@ object EncoderSpec extends SimpleIOSuite {
       }
     }
   }
+
+  test("Should encode literal") {
+    final case class C(a: 1, b: "hello")
+    val instance = C(1, "hello")
+
+    IO {
+      expect {
+        instance.asFormData == Chain(("a", "1"), ("b", "hello"))
+      }
+    }
+  }
 }
