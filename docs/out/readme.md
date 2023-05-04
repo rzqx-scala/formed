@@ -25,7 +25,7 @@ val item2 = LineItem("price2", 2)
 val checkout = CheckoutSession("payment", List(item1, item2))
 ```
 
-Squash the instance to a form:
+Squash the instance:
 ```scala
 checkout.asFormData
 // res0: cats.data.Chain[(String, String)] = Wrap(
@@ -50,9 +50,9 @@ UrlForm.fromChain(checkout.asFormData)
 // res2: UrlForm = HashMap(line_items[0][quantity] -> Chain(1), line_items[1][price] -> Chain(price2), line_items[0][price] -> Chain(price1), mode -> Chain(payment), line_items[1][quantity] -> Chain(2))
 ```
 
-## Typeclasses
+## Customization
 
-Define an encoder for a new type by converting it into a string:
+Define an encoder for a new type by converting it into a string inside `contramap`:
 ```scala
 import io.github.rzqx.formed.FormEncoder
 import cats.implicits._
@@ -60,7 +60,7 @@ import scala.concurrent.duration._
 
 implicit val durationEncoder: FormEncoder[Duration] =
   FormEncoder[String].contramap(_.toSeconds.toString)
-// durationEncoder: FormEncoder[Duration] = io.github.rzqx.formed.FormEncoder$$anon$1$$anonfun$contramap$2@608e0845
+// durationEncoder: FormEncoder[Duration] = io.github.rzqx.formed.FormEncoder$$anon$1$$anonfun$contramap$2@109189b8
   
 final case class Foo(duration: Duration)
 
@@ -68,27 +68,31 @@ Foo(1.hour).asFormDisplay
 // res3: String = "duration=3600"
 ```
 
-Define a prefix encoder to change the way nested fields are encoded:
+Define a custom prefix encoder to change the way nested fields are encoded:
 ```scala
 import io.github.rzqx.formed.PrefixEncoder
+
+// import only the encoder instances
 import io.github.rzqx.formed.instances.EncoderInstances._
+
 import io.github.rzqx.formed.syntax._
 import cats.data.Chain
 import cats.implicits._
 
 implicit val arrowPrefixEncoder: PrefixEncoder = (value: Chain[String]) =>
-    value.deleteFirst(_ => true) match {
-      case Some((head, tail)) => head + tail.foldMap(v => s" --> $v")
-      case None => ""
-    }
-// arrowPrefixEncoder: PrefixEncoder = repl.MdocSession$MdocApp4$$anonfun$14@5f3f0b8c
+  value.deleteFirst(_ => true) match {
+    case Some((head, tail)) => head + tail.foldMap(v => s"->$v")
+    case None => ""
+  }
+```
 
-
+Use the custom prefix encoder:
+```scala
 final case class LineItem(price: String, quantity: Int)
 final case class CheckoutSession(mode: String, line_items: List[LineItem])
 
 CheckoutSession("payment", List(LineItem("price1", 1))).asFormDisplay
 // res5: String = """mode=payment
-// line_items --> 0 --> price=price1
-// line_items --> 0 --> quantity=1"""
+// line_items->0->price=price1
+// line_items->0->quantity=1"""
 ```

@@ -25,7 +25,7 @@ val item2 = LineItem("price2", 2)
 val checkout = CheckoutSession("payment", List(item1, item2))
 ```
 
-Squash the instance to a form:
+Squash the instance:
 ```scala mdoc
 checkout.asFormData
 
@@ -39,9 +39,9 @@ import org.http4s.UrlForm
 UrlForm.fromChain(checkout.asFormData)
 ```
 
-## Typeclasses
+## Customization
 
-Define an encoder for a new type by converting it into a string:
+Define an encoder for a new type by converting it into a string inside `contramap`:
 ```scala mdoc
 import io.github.rzqx.formed.FormEncoder
 import cats.implicits._
@@ -55,21 +55,26 @@ final case class Foo(duration: Duration)
 Foo(1.hour).asFormDisplay 
 ```
 
-Define a prefix encoder to change the way nested fields are encoded:
-```scala mdoc:reset
+Define a custom prefix encoder to change the way nested fields are encoded:
+```scala mdoc:reset:silent
 import io.github.rzqx.formed.PrefixEncoder
+
+// import only the encoder instances
 import io.github.rzqx.formed.instances.EncoderInstances._
+
 import io.github.rzqx.formed.syntax._
 import cats.data.Chain
 import cats.implicits._
 
 implicit val arrowPrefixEncoder: PrefixEncoder = (value: Chain[String]) =>
-    value.deleteFirst(_ => true) match {
-      case Some((head, tail)) => head + tail.foldMap(v => s" --> $v")
-      case None => ""
-    }
+  value.deleteFirst(_ => true) match {
+    case Some((head, tail)) => head + tail.foldMap(v => s"->$v")
+    case None => ""
+  }
+```
 
-
+Use the custom prefix encoder:
+```scala mdoc
 final case class LineItem(price: String, quantity: Int)
 final case class CheckoutSession(mode: String, line_items: List[LineItem])
 
