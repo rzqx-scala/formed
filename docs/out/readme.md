@@ -9,6 +9,11 @@ Currently supports Scala 2.12 and 2.13.
 
 # Quick Usage
 
+Add to your build.sbt:
+```scala
+libraryDependencies += "io.github.rzqx" % "formed" % "<version>"
+```
+
 Imports:
 ```scala
 import io.github.rzqx.formed.implicits._
@@ -60,7 +65,7 @@ import scala.concurrent.duration._
 
 implicit val durationEncoder: FormEncoder[Duration] =
   FormEncoder[String].contramap(_.toSeconds.toString)
-// durationEncoder: FormEncoder[Duration] = io.github.rzqx.formed.FormEncoder$$anon$1$$anonfun$contramap$2@6f038188
+// durationEncoder: FormEncoder[Duration] = io.github.rzqx.formed.FormEncoder$$anon$1$$anonfun$contramap$2@1e3d3d56
   
 final case class Foo(duration: Duration)
 

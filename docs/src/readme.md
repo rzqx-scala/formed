@@ -9,6 +9,11 @@ Currently supports Scala 2.12 and 2.13.
 
 # Quick Usage
 
+Add to your build.sbt:
+```scala
+libraryDependencies += "io.github.rzqx" % "formed" % "<version>"
+```
+
 Imports:
 ```scala mdoc
 import io.github.rzqx.formed.implicits._
