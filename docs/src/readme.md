@@ -5,7 +5,7 @@ Helper library to squash generic nested products into a list of fields
 for www-form-urlencoded requests, typically to interface with APIs
 that don't support JSON.
 
-Currently supports Scala 2.12 and 2.13.
+Currently supports Scala 2.13.
 
 # Quick Usage
 

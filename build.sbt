@@ -5,10 +5,9 @@ val WeaverCatsVersion = "0.8.3"
 val ShapelessVersion = "2.3.10"
 val Http4sVersion = "0.23.18"
 
-val Scala212 = "2.12.17"
 val Scala213 = "2.13.10"
 
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213)
+ThisBuild / crossScalaVersions := Seq(Scala213)
 ThisBuild / scalaVersion := Scala213
 
 ThisBuild / organization := "io.github.rzqx"
