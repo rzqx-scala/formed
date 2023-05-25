@@ -65,4 +65,26 @@ object EncoderSpec extends SimpleIOSuite {
       }
     }
   }
+
+  test("Should encode Some") {
+    final case class C(a: Option[Int])
+    val instance = C(Option(1))
+
+    IO {
+      expect {
+        instance.asFormData == Chain(("a", "1"))
+      }
+    }
+  }
+
+  test("Should encode None") {
+    final case class C(a: Option[Int])
+    val instance = C(None)
+
+    IO {
+      expect {
+        instance.asFormData == Chain()
+      }
+    }
+  }
 }
